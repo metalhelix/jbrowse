@@ -87,7 +87,7 @@ function getConfig(env) {
 			lesspp: "//cdnjs.cloudflare.com/ajax/libs/less.js/1.7.3/less.min",
 		},
 
-		deps: ["src/JBrowse/init"],
+		//deps: ["src/JBrowse/init"],
 
 		async: true,
 
