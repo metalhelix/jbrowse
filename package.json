@@ -5,9 +5,9 @@
   "description": "JBrowse - client-side genome browser",
   "repository": "https://github.com/GMOD/jbrowse.git",
   "scripts": {
-    "postinstall": "node utils/postinstall.js",
     "test": "phantomjs tests/js_tests/run-jasmine.js http://localhost/jbrowse/tests/js_tests/index.html",
-    "start": "./jb_run.js -p 8082"
+    "start": "./jb_run.js -p 8082",
+    "build": "node node_modules/webpack/bin/webpack.js --config webpack.config.js"
   },
   "publishConfig": {
     "access": "public"
@@ -31,12 +31,22 @@
     "express": "^4.15.4",
     "filesaver.js": "^0.2.0",
     "fs-extra": "^4.0.1",
-    "jDataView": "git+https://github.com/rbuels/jdataview.git",
+    "jDataView": "git+ssh://git@github.com/rbuels/jdataview.git",
     "jasmine-node": "^1.14.5",
-    "json-schema": "git+https://github.com/kriszyp/json-schema.git",
-    "jszlib": "git+https://github.com/cmdcolin/jszlib.git",
-    "lazyload": "git+https://github.com/cmdcolin/lazyload.git#amd",
+    "json-schema": "git+ssh://git@github.com/kriszyp/json-schema.git",
+    "jszlib": "git+ssh://git@github.com/cmdcolin/jszlib.git",
+    "lazyload": "git+ssh://git@github.com/cmdcolin/lazyload.git#amd",
     "node-getopt": "^0.2.3",
     "shelljs": "^0.7.8"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "4.1.1",
+    "css-loader": "0.25.0",
+    "dojo-webpack-plugin": "2.3.3",
+    "less": "2.7.1",
+    "less-loader": "2.2.3",
+    "style-loader": "0.13.1",
+    "url-loader": "0.5.7",
+    "webpack": "3.10.0"
   }
 }
