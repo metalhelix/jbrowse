@@ -21,7 +21,7 @@ var webpack = require("webpack");
 
 module.exports = {
 	context: __dirname,
-	entry: "src/JBrowse/init",
+	entry: "src/JBrowse/main",
 	output: {
 		path: path.join(__dirname, "release"),
 		publicPath: "release/",
