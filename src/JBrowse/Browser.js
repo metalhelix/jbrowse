@@ -137,7 +137,6 @@ var dojof = Util.dojof;
 return declare( FeatureFiltererMixin, {
 
 constructor: function(params) {
-    console.log('here');
     this.globalKeyboardShortcuts = {};
 
     this.config = params || {};
@@ -559,7 +558,9 @@ loadNames: function() {
             var thisB = this;
             if( type.indexOf('/') == -1 )
                 type = 'JBrowse/Store/Names/'+type;
-            require ([type], function (CLASS){
+            console.log(type);
+            require (['JBrowse/Store/Names/Hash'], function (CLASS){
+                console.log(CLASS);
                 thisB.nameStore = new CLASS( dojo.mixin({ browser: thisB }, conf) );
                 deferred.resolve({success: true});
             });
@@ -2292,7 +2293,7 @@ createTrackList: function() {
             tl_class = 'JBrowse/View/TrackList/'+tl_class;
 
         // load all the classes we need
-        require( [ tl_class ],
+        require( [ 'JBrowse/View/TrackList/Hierarchical' ],
                  dojo.hitch( this, function( trackListClass ) {
                      // instantiate the tracklist and the track metadata object
                      this.trackListView = new trackListClass(
