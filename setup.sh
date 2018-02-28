@@ -130,6 +130,7 @@ echo -n "Formatting Volvox example data ...";
     cat docs/tutorial/data_files/volvox_fromconfig.conf >> sample_data/json/volvox/tracks.conf
     cat docs/tutorial/data_files/volvox.gff3.conf >> sample_data/json/volvox/tracks.conf
     cat docs/tutorial/data_files/volvox.gtf.conf >> sample_data/json/volvox/tracks.conf
+    cat docs/tutorial/data_files/volvox.bb.conf >> sample_data/json/volvox/tracks.conf
     cat docs/tutorial/data_files/volvox.sort.gff3.gz.conf >> sample_data/json/volvox/tracks.conf
     cat docs/tutorial/data_files/volvox.bw.gff3.gz.conf >> sample_data/json/volvox/tracks.conf
     cat docs/tutorial/data_files/volvox.sort.bed.gz.conf >> sample_data/json/volvox/tracks.conf
