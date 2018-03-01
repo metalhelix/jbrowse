@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+# Release 1.12.5     2018-02-28 20:08:35 UTC
+
 ## Minor improvements
 
   * Safari versions 10 and 11 will now see buttons for downloading feature FASTA
@@ -38,7 +40,7 @@
 
   * The global `highResolutionMode` configuration is now set to `auto`, meaning that
     JBrowse by default will now auto-detect high-DPI displays (Apple Retina displays
-    and the like) and draw canvas-based tracks more clearly on them. This capability
+    and similar) and draw canvas-based tracks more clearly on them. This capability
     has been present in the JBrowse code for a long time, but has been turned off
     by default. (@rbuels)
 
@@ -51,10 +53,26 @@
   * Added a basic loading screen for when the page is initially loading (pull #1008,
     @cmdcolin)
 
+  * The `subfeatureDetailLevel` configuration variable for tracks now defaults to a value
+    of 2, meaning that the builtin JBrowse default feature detail popup dialogs will only
+    show one level of subfeatures by default. Most feature tracks have only one level of
+    subfeatures anyway, but for very complex data (like gene models with many transcripts,
+    each with many introns and exons), this new default will prevent a rather confusing
+    problem some users were seeing in which JBrowse would seem to 'hang' when clicking a
+    gene model to see its details. Thanks to @cmdcolin for the original implementation of the
+    `subfeatureDetailLevel` configuration variable, @kshefchek for a good bug report that
+    shows it, and @nathandunn and @selewis for valuable discussions.
+    (issue #559, pull #1010, @rbuels)
+
+
 ## Bug fixes
 
   * Fixed a security issue with JBrowse error messages. Thanks to @GrainGenes for
     noticing and reporting it! (issue #602, @rbuels)
+
+  * Fixed an off-by-one error in the "Next segment position" field of BAM features.
+    Thanks to @keiranmraine for reporting it, and @rdhayes for tracking down the fix!
+    (issue #907, pull #986, @rdhayes)
 
   * Fixed the broken demo track data source in the modENCODE sample data. Thanks
     to @cmdcolin for the fix! (pull #999, @cmdcolin)
@@ -65,6 +83,14 @@
   * Feature detail dialogs for variant tracks now correctly display "no-call" in
     the genotype details table for "./." alleles.  Thanks to @carrere for reporting
     it, and @cmdcolin for the fix. (issue #980, pull #990, @cmdcolin)
+
+  * Fix parsing of the END field in VCF tracks, enabling things like CNV and deletion
+    variants to be visualized from variant tracks. (pull #847, @cmdcolin)
+
+  * Fixed a long-standing bug in JBrowse configuration template parsing that
+    prevented use of dot-notation nested variable names, e.g. `{foo.bar}`, in
+    JBrowse configuration, as well as whitespace inside the braces. Big thanks to
+    @wuroger for finding this bug. (issue #1012, @rbuels)
 
 # Release 1.12.4     2018-02-14 22:29:20 UTC
 
