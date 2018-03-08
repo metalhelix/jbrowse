@@ -50,8 +50,10 @@ sub option_definitions {(
     "trackLabel=s",
     "seqType=s",
     "key=s",
+    "trackConfig=s",
     "help|h|?",
-    "nohash"
+    "nohash",
+    "noSort"
 )}
 
 sub run {
@@ -68,6 +70,13 @@ sub run {
         my $chunkSize = $self->opt('chunksize');
         $chunkSize *= 4 if $compress;
         $self->{chunkSize} = $chunkSize;
+    }
+
+    # If trackConfig is supplied, decode as JSON
+    for my $optname ( qw( trackConfig ) ) {
+        if( my $o = $self->opt($optname) ) {
+            $self->opt( $optname => Bio::JBrowse::JSON->new->decode( $o ));
+        }
     }
 
     my $refs = $self->opt('refs');
@@ -173,6 +182,8 @@ sub exportFAI {
     # TODO - consider whether to add accept_ref functionality
     # TODO - currently just assumes that there is a '.fai' file present-- we could make one if needed
     my %refSeqs;
+    my $unsorted = $self->opt('noSort');
+    my @originalorder;
     my $fai = "$indexed_fasta.fai";
     open FAI, "<$fai" or die "Unable to read from $fai: $!\n";
     local $_;
@@ -185,7 +196,8 @@ sub exportFAI {
                 offset => $3,
                 line_length => $4,
                 line_byte_length => $5
-            }
+            };
+            push( @originalorder, $1 ) if $unsorted;
             # TODO - description is only present in fasta file, not in fai file...
         } else {
             die "Improperly-formatted line in fai file ($fai):\n$_\n"
@@ -196,7 +208,7 @@ sub exportFAI {
     mkpath( $dir );
     copy( $fai, $dir ) or die "Unable to copy $fai to $dir: $!\n";
     copy( $indexed_fasta, $dir ) or die "Unable to copy $indexed_fasta to $dir: $!\n";
-    $self->writeRefSeqsJSON( \%refSeqs );
+    $self->writeRefSeqsJSON( \%refSeqs, \@originalorder );
 }
 
 sub exportTWOBIT {
@@ -210,7 +222,7 @@ sub exportTWOBIT {
     my %refSeqs;
     twobit_populate_toc($fh, $count, \%toc, $header->{unpack});
 
-    for my $name (keys %toc) {
+    for my $name (sort keys %toc) {
         my $offset = $toc{$name};
         my $size = twobit_fetch_record($fh, $offset, $header->{unpack});
         $refSeqs{$name} = {
@@ -237,6 +249,8 @@ sub exportFASTA {
     }
 
     my %refSeqs;
+    my $unsorted = $self->opt('noSort');
+    my @originalorder;
     for my $fasta ( @$files ) {
         my $gzip = $fasta =~ /\.gz(ip)?$/i ? ':gzip' : '';
 
@@ -281,6 +295,7 @@ sub exportFASTA {
                         seqChunkSize => $self->{chunkSize},
                         $2 ? ( description => $2 ) : ()
                         };
+                    push( @originalorder, $1 ) if $unsorted;
                 } else {
                     undef $curr_seq;
                 }
@@ -297,7 +312,7 @@ sub exportFASTA {
         $writechunks->('flush');
     }
 
-    $self->writeRefSeqsJSON( \%refSeqs );
+    $self->writeRefSeqsJSON( \%refSeqs, \@originalorder );
 }
 
 sub exportDB {
@@ -367,7 +382,7 @@ sub exportDB {
 }
 
 sub writeRefSeqsJSON {
-    my ( $self, $refseqs ) = @_;
+    my ( $self, $refseqs, $originalorder ) = @_;
 
     mkpath( File::Spec->catdir($self->{storage}{outDir},'seq') );
 
@@ -382,7 +397,7 @@ sub writeRefSeqsJSON {
                                                $old->[$i] = delete $refs{$old->[$i]->{name}};
                                            }
                                        }
-                                       foreach my $name (sort keys %refs) {
+                                       foreach my $name (($originalorder && @$originalorder) ? @$originalorder : sort keys %refs) {
                                            if( not exists $refs{$name}{length} ) {
                                                $refs{$name}{length} = $refs{$name}{end}+0 - $refs{$name}{start}+0;
                                            }
@@ -442,6 +457,8 @@ sub writeTrackEntry {
                                                ( 'dna' eq lc $self->opt('seqType') ? () : ('showReverseStrand' => 0 ) ),
                                                ( 'protein' eq lc $self->opt('seqType') ? ('showTranslation' => 0) : () ),
                                                ( defined $self->opt('seqType') ? ('seqType' => lc $self->opt('seqType')) : () ),
+                                               # Merge in any extra trackConfig supplied by the user.
+                                               %{ $self->opt('trackConfig') || {} },
                                            };
                                            if ( $self->opt('indexed_fasta') ) {
                                                $tracks->[$i]->{'storeClass'} = 'JBrowse/Store/Sequence/IndexedFasta';

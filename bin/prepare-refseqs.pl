@@ -67,6 +67,11 @@ sequences.
 A FASTA file (which should already have an accompaning '.fai' file)
 from which to load reference sequences.
 
+=item --noSort
+
+If using GFF or FASTA input, preserve the order of the reference
+sequences (sorts alphabetically by default).
+
 =item --conf <file>
 
 biodb-to-json.pl configuration file that defines a database from which
@@ -115,6 +120,12 @@ The displayed name of the sequence track, defaults to 'Reference sequence'.
 
 The Name of the alphabet used for these reference sequences, usually
 either 'dna', 'rna', or 'protein'.
+
+=item --trackConfig '{ JSON-format extra configuration for this track }'
+
+Additional top-level configuration for the client, in JSON syntax.  Example:
+
+  --trackConfig '{ "glyph": "ProcessedTranscript" }'
 
 =back
 
